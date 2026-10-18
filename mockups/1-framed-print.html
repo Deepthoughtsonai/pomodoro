@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mockup 1: Framed Print</title>
+  <style>
+    :root {
+      --cream: #f3ecdc;
+      --paper: #fbf7ec;
+      --ink: #3b3226;
+      --muted: #8a7d68;
+      --line: #d9ccb2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "American Typewriter", "Courier New", Courier, monospace;
+      line-height: 1.5;
+    }
+    .intro { text-align: center; padding: 32px 16px 8px; color: var(--muted); font-size: 0.85rem; }
+    .intro h1 { margin: 0 0 4px; font-size: 1.1rem; color: var(--ink); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .view { padding: 40px 16px 56px; border-top: 1px dashed var(--line); }
+    .view-label {
+      text-align: center; margin: 0 0 24px;
+      font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+    }
+    .screen { max-width: 440px; margin: 0 auto; text-align: center; }
+
+    /* the framed print */
+    .mat {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(59, 50, 38, 0.10);
+    }
+    .art {
+      aspect-ratio: 4 / 5;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 68% 28%, #f0d9a8 0 11%, transparent 12%),
+        linear-gradient(165deg, #d2ad86 0%, #a97c64 48%, #647572 100%);
+      overflow: hidden;
+    }
+    .blur-heavy { filter: blur(22px); }
+    .blur-medium { filter: blur(9px); }
+    .art-wrap { overflow: hidden; }
+
+    .loading {
+      aspect-ratio: 4 / 5; border: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: center;
+      background: #efe6d2; color: var(--muted); font-size: 0.95rem;
+      animation: breathe 2.4s ease-in-out infinite;
+    }
+    @keyframes breathe { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+
+    .timer { margin: 24px 0 14px; font-size: 1.4rem; letter-spacing: 0.12em; }
+    .buttons { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      font: inherit; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink); background: transparent;
+      border: 1px solid var(--ink); border-radius: 999px;
+      padding: 9px 22px; cursor: pointer;
+    }
+    .btn.soft { border-color: var(--line); color: var(--muted); }
+
+    .details { margin-top: 24px; }
+    .details .name { font-size: 1.15rem; font-style: italic; margin: 0; }
+    .details .meta { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; }
+
+    @media (min-width: 900px) {
+      .screen { max-width: 520px; }
+      .mat { padding: 40px; }
+      .timer { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="intro">
+    <h1>Framed Print</h1>
+    Mockup 1 of 3 &middot; design only, the buttons do nothing
+  </div>
+
+  <section class="view">
+    <p class="view-label">View 1 &middot; Before starting</p>
+    <div class="screen">
+      <div class="mat">
+        <div class="art-wrap"><div class="art blur-heavy"></div></div>
+      </div>
+      <div class="timer">25:00</div>
+      <div class="buttons">
+        <button class="btn">Start</button>
+        <button class="btn soft">Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="view">
+    <p class="view-label">View 2 &middot; Timer running</p>
+    <div class="screen">
+      <div class="mat">
+        <div class="art-wrap"><div class="art blur-medium"></div></div>
+      </div>
+      <div class="timer">14:32</div>
+      <div class="buttons">
+        <button class="btn">Pause</button>
+        <button class="btn soft">Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="view">
+    <p class="view-label">View 3 &middot; Timer finished</p>
+    <div class="screen">
+      <div class="mat">
+        <div class="art-wrap"><div class="art"></div></div>
+      </div>
+      <div class="timer">00:00</div>
+      <div class="buttons">
+        <button class="btn">Restart session</button>
+      </div>
+      <div class="details">
+        <p class="name">The Quiet Orchard</p>
+        <p class="meta">Marguerite Aldous, 1887</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="view">
+    <p class="view-label">Extra &middot; Loading artwork</p>
+    <div class="screen">
+      <div class="mat">
+        <div class="loading">Loading artwork...</div>
+      </div>
+      <div class="timer">25:00</div>
+      <div class="buttons">
+        <button class="btn soft">Start</button>
+        <button class="btn soft">Reset</button>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
