@@ -1,0 +1,231 @@
+:root {
+  --cream: #f3ecdc;
+  --paper: #fbf7ec;
+  --ink: #3b3226;
+  --muted: #8a7d68;
+  --line: #d9ccb2;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "American Typewriter", "Courier New", Courier, monospace;
+  line-height: 1.5;
+}
+
+/* Phone: one column. Painting, then timer and buttons, then painting details. */
+:root {
+  --max-h: 48vh;
+  --mat-pad: 28px;
+}
+
+.screen {
+  width: 100%;
+  max-width: 440px;
+  display: grid;
+  grid-template-areas:
+    "stage"
+    "controls"
+    "details";
+  text-align: center;
+}
+
+.stage { grid-area: stage; container-type: inline-size; }
+.controls { grid-area: controls; }
+.details-slot { grid-area: details; overflow-wrap: anywhere; min-height: 7rem; }
+
+/* the framed print: it hugs the frame, which takes the painting's shape */
+.mat {
+  width: fit-content;
+  margin: 0 auto;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: var(--mat-pad);
+  box-shadow: 0 10px 30px rgba(59, 50, 38, 0.10);
+}
+
+/* The frame takes the shape of the painting (--ratio is its width divided by
+   its height) but never grows bigger than the space on screen. Inside it shows
+   one of three things: the placeholder (default, tall 4:5), "Loading
+   artwork...", or the real painting.
+   --p is the share of time left (1 at the start, 0 at 00:00) and sets the blur. */
+.art-wrap {
+  --p: 1;
+  --ratio: 0.8;
+  --blur: calc(var(--p) * 9cqmin);
+  --zoom: calc(1 + var(--p) * 0.34);
+  position: relative;
+  width: min(calc(100cqw - 2 * var(--mat-pad) - 2px), calc(var(--max-h) * var(--ratio)));
+  aspect-ratio: var(--ratio);
+  overflow: hidden;
+  container-type: size;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.art,
+.loading,
+.artwork-clip {
+  position: absolute;
+  inset: 0;
+}
+
+.art {
+  overflow: hidden;
+}
+
+/* The gradient is a little bigger than the box while blurred, so the soft
+   edges of the blur fall outside the box and get cut off. */
+.art::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 68% 28%, #f0d9a8 0 11%, transparent 12%),
+    linear-gradient(165deg, #d2ad86 0%, #a97c64 48%, #647572 100%);
+  filter: blur(var(--blur));
+  transform: scale(var(--zoom));
+}
+
+.loading,
+.artwork-clip {
+  display: none;
+}
+
+.loading {
+  align-items: center;
+  justify-content: center;
+  background: #efe6d2;
+  color: var(--muted);
+  font-size: 0.95rem;
+  animation: breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* The frame is exactly the painting's shape, so the blur is cut off at the
+   painting's own edge and never spills onto the paper around it. */
+.artwork-clip {
+  overflow: hidden;
+}
+
+.artwork {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(var(--blur));
+  transform: scale(var(--zoom));
+}
+
+/* Smooth steps while the countdown runs. No fade on Reset or Restart. */
+.screen.started .art::before,
+.screen.started .artwork {
+  transition: filter 0.3s linear, transform 0.3s linear;
+}
+
+.art-wrap[data-state="loading"] .art,
+.art-wrap[data-state="image"] .art {
+  display: none;
+}
+
+.art-wrap[data-state="loading"] .loading {
+  display: flex;
+}
+
+.art-wrap[data-state="image"] .artwork-clip {
+  display: block;
+}
+
+.timer {
+  margin: 24px 0 14px;
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font: inherit;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  padding: 9px 22px;
+  cursor: pointer;
+}
+
+.btn.soft {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.details {
+  margin-top: 24px;
+}
+
+.details .name {
+  font-size: 1.15rem;
+  font-style: italic;
+  margin: 0;
+}
+
+.details .meta {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.details .met-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.details .met-link:hover {
+  color: var(--ink);
+}
+
+/* Laptop: timer on the left, painting in the middle, details on the right.
+   The right side is always reserved, so nothing moves when the details appear. */
+@media (min-width: 900px) {
+  :root {
+    --max-h: max(240px, calc(100vh - 170px));
+    --mat-pad: 40px;
+  }
+
+  .screen {
+    max-width: 1240px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 520px) minmax(0, 1fr);
+    grid-template-areas: "controls stage details";
+    align-items: center;
+    column-gap: 48px;
+  }
+
+  .timer { margin: 0 0 14px; font-size: 1.5rem; }
+  .details { margin-top: 0; }
+  .details-slot { min-height: 0; }
+}
