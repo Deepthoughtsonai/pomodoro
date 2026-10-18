@@ -35,27 +35,51 @@ body {
   box-shadow: 0 10px 30px rgba(59, 50, 38, 0.10);
 }
 
-.art-wrap { overflow: hidden; }
+/* The artwork box is always the same size. Inside it shows one of three
+   things: the placeholder (default), "Loading artwork...", or the real painting.
+   --p is the share of time left (1 at the start, 0 at 00:00) and sets the blur. */
+.art-wrap {
+  --p: 1;
+  --ratio: 0.8;
+  --blur: calc(var(--p) * 8cqw);
+  --zoom: calc(1 + var(--p) * 0.24);
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  container-type: size;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.art,
+.loading {
+  position: absolute;
+  inset: 0;
+}
 
 .art {
-  aspect-ratio: 4 / 5;
-  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+/* The gradient is a little bigger than the box while blurred, so the soft
+   edges of the blur fall outside the box and get cut off. */
+.art::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background:
     radial-gradient(circle at 68% 28%, #f0d9a8 0 11%, transparent 12%),
     linear-gradient(165deg, #d2ad86 0%, #a97c64 48%, #647572 100%);
-  filter: blur(22px);
+  filter: blur(var(--blur));
+  transform: scale(var(--zoom));
 }
 
-/* The artwork box shows one of three things: the placeholder (default),
-   "Loading artwork...", or the real painting. */
 .loading,
-.artwork {
+.artwork-clip {
   display: none;
 }
 
 .loading {
-  aspect-ratio: 4 / 5;
-  border: 1px solid var(--line);
   align-items: center;
   justify-content: center;
   background: #efe6d2;
@@ -69,12 +93,31 @@ body {
   50% { opacity: 1; }
 }
 
+/* The clip is exactly the size of the painting, so the blur is cut off at the
+   painting's own edge and never spills onto the paper around it. */
+.artwork-clip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(100cqw, 100cqh * var(--ratio));
+  height: min(100cqh, 100cqw / var(--ratio));
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+}
+
 .artwork {
+  display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: contain;
-  background: var(--paper);
-  border: 1px solid var(--line);
+  height: 100%;
+  object-fit: cover;
+  filter: blur(var(--blur));
+  transform: scale(var(--zoom));
+}
+
+/* Smooth steps while the countdown runs. No fade on Reset or Restart. */
+.screen.started .art::before,
+.screen.started .artwork {
+  transition: filter 0.3s linear, transform 0.3s linear;
 }
 
 .art-wrap[data-state="loading"] .art,
@@ -86,16 +129,8 @@ body {
   display: flex;
 }
 
-.art-wrap[data-state="image"] .artwork {
+.art-wrap[data-state="image"] .artwork-clip {
   display: block;
-}
-
-.screen.started .art {
-  filter: blur(9px);
-}
-
-.screen.finished .art {
-  filter: none;
 }
 
 .timer {

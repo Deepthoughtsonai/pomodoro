@@ -25,6 +25,7 @@ function render() {
   const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
   const seconds = String(totalSeconds % 60).padStart(2, '0');
   timerEl.textContent = `${minutes}:${seconds}`;
+  artWrap.style.setProperty('--p', remainingMs / DURATION_MS);
 }
 
 function stop() {
@@ -114,7 +115,7 @@ function pickId() {
 function preload(url) {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.onload = resolve;
+    img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = url;
   });
@@ -133,8 +134,9 @@ async function loadArtwork() {
       const id = pickId();
       const art = await (await fetch(OBJECT_URL + id)).json();
       if (art.isPublicDomain && art.primaryImageSmall) {
-        await preload(art.primaryImageSmall);
+        const photo = await preload(art.primaryImageSmall);
         if (thisLoad !== loadCount) return;
+        artWrap.style.setProperty('--ratio', photo.naturalWidth / photo.naturalHeight);
         artworkEl.src = art.primaryImageSmall;
         currentId = id;
         currentArt = {
