@@ -46,6 +46,50 @@ body {
   filter: blur(22px);
 }
 
+/* The artwork box shows one of three things: the placeholder (default),
+   "Loading artwork...", or the real painting. */
+.loading,
+.artwork {
+  display: none;
+}
+
+.loading {
+  aspect-ratio: 4 / 5;
+  border: 1px solid var(--line);
+  align-items: center;
+  justify-content: center;
+  background: #efe6d2;
+  color: var(--muted);
+  font-size: 0.95rem;
+  animation: breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.artwork {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: contain;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.art-wrap[data-state="loading"] .art,
+.art-wrap[data-state="image"] .art {
+  display: none;
+}
+
+.art-wrap[data-state="loading"] .loading {
+  display: flex;
+}
+
+.art-wrap[data-state="image"] .artwork {
+  display: block;
+}
+
 .screen.started .art {
   filter: blur(9px);
 }

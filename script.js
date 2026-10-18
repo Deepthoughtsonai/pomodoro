@@ -1,14 +1,23 @@
 const DURATION_MS = 30 * 1000;
+const SEARCH_URL = 'https://collectionapi.metmuseum.org/public/collection/v1.1/search'
+  + '?q=painting&medium=Paintings&hasImages=true&isHighlight=true';
+const OBJECT_URL = 'https://collectionapi.metmuseum.org/public/collection/v1/objects/';
+const MAX_TRIES = 5;
 
 const screen = document.querySelector('.screen');
 const timerEl = document.getElementById('timer');
 const toggleBtn = document.getElementById('toggle-btn');
 const resetBtn = document.getElementById('reset-btn');
+const artWrap = document.getElementById('art-wrap');
+const artworkEl = document.getElementById('artwork');
 
 let remainingMs = DURATION_MS;
 let endTime = 0;
 let intervalId = null;
 let finished = false;
+let objectIds = [];
+let currentId = null;
+let loadCount = 0;
 
 function render() {
   const totalSeconds = Math.ceil(remainingMs / 1000);
@@ -74,9 +83,57 @@ function run() {
   toggleBtn.textContent = 'Pause';
 }
 
+function pickId() {
+  let index = Math.floor(Math.random() * objectIds.length);
+  if (objectIds.length > 1 && objectIds[index] === currentId) {
+    index = (index + 1) % objectIds.length;
+  }
+  return objectIds[index];
+}
+
+function preload(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = resolve;
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+async function loadArtwork() {
+  const thisLoad = ++loadCount;
+  artWrap.dataset.state = 'loading';
+  try {
+    if (objectIds.length === 0) {
+      const search = await (await fetch(SEARCH_URL)).json();
+      objectIds = search.objectIDs || [];
+    }
+    for (let i = 0; i < MAX_TRIES && objectIds.length > 0; i++) {
+      const id = pickId();
+      const art = await (await fetch(OBJECT_URL + id)).json();
+      if (art.isPublicDomain && art.primaryImageSmall) {
+        await preload(art.primaryImageSmall);
+        if (thisLoad !== loadCount) return;
+        artworkEl.src = art.primaryImageSmall;
+        currentId = id;
+        artWrap.dataset.state = 'image';
+        return;
+      }
+      // No usable photo: never try this one again.
+      objectIds = objectIds.filter((other) => other !== id);
+    }
+  } catch (error) {
+    // Keep showing the placeholder below.
+  }
+  if (thisLoad === loadCount) {
+    delete artWrap.dataset.state;
+  }
+}
+
 toggleBtn.addEventListener('click', () => {
   if (finished) {
     reset();
+    loadArtwork();
   } else if (intervalId) {
     tick();
     if (intervalId) {
@@ -89,3 +146,5 @@ toggleBtn.addEventListener('click', () => {
 });
 
 resetBtn.addEventListener('click', reset);
+
+loadArtwork();
