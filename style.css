@@ -46,6 +46,10 @@ body {
   filter: blur(22px);
 }
 
+.screen.started .art {
+  filter: blur(9px);
+}
+
 .timer {
   margin: 24px 0 14px;
   font-size: 1.4rem;
