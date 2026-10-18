@@ -145,6 +145,20 @@ body {
   font-size: 0.9rem;
 }
 
+.details .met-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.details .met-link:hover {
+  color: var(--ink);
+}
+
 @media (min-width: 900px) {
   .screen { max-width: 520px; }
   .mat { padding: 40px; }

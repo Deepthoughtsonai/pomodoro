@@ -17,6 +17,7 @@ let intervalId = null;
 let finished = false;
 let objectIds = [];
 let currentId = null;
+let currentArt = null;
 let loadCount = 0;
 
 function render() {
@@ -49,20 +50,39 @@ function finish() {
   toggleBtn.textContent = 'Restart session';
   resetBtn.hidden = true;
 
+  if (currentArt) {
+    screen.append(buildDetails(currentArt));
+  }
+}
+
+function buildDetails(art) {
   const details = document.createElement('div');
   details.className = 'details';
   details.id = 'details';
 
   const name = document.createElement('p');
   name.className = 'name';
-  name.textContent = 'The Quiet Orchard';
+  name.textContent = art.title || 'Untitled';
 
   const meta = document.createElement('p');
   meta.className = 'meta';
-  meta.textContent = 'Marguerite Aldous, 1887';
+  meta.textContent = [art.artist || 'Unknown artist', art.year]
+    .filter(Boolean)
+    .join(', ');
 
   details.append(name, meta);
-  screen.append(details);
+
+  if (art.url.startsWith('https://')) {
+    const link = document.createElement('a');
+    link.className = 'met-link';
+    link.href = art.url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = 'View on the Met website';
+    details.append(link);
+  }
+
+  return details;
 }
 
 function reset() {
@@ -103,6 +123,7 @@ function preload(url) {
 async function loadArtwork() {
   const thisLoad = ++loadCount;
   artWrap.dataset.state = 'loading';
+  currentArt = null;
   try {
     if (objectIds.length === 0) {
       const search = await (await fetch(SEARCH_URL)).json();
@@ -116,6 +137,12 @@ async function loadArtwork() {
         if (thisLoad !== loadCount) return;
         artworkEl.src = art.primaryImageSmall;
         currentId = id;
+        currentArt = {
+          title: (art.title || '').trim(),
+          artist: (art.artistDisplayName || '').trim(),
+          year: (art.objectDate || '').trim(),
+          url: (art.objectURL || '').trim(),
+        };
         artWrap.dataset.state = 'image';
         return;
       }
