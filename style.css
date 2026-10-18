@@ -1,7 +1,84 @@
+:root {
+  --cream: #f3ecdc;
+  --paper: #fbf7ec;
+  --ink: #3b3226;
+  --muted: #8a7d68;
+  --line: #d9ccb2;
+}
+
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 40px 16px;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "American Typewriter", "Courier New", Courier, monospace;
+  line-height: 1.5;
+}
+
+.screen {
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+}
+
+/* the framed print */
+.mat {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(59, 50, 38, 0.10);
+}
+
+.art-wrap { overflow: hidden; }
+
+.art {
+  aspect-ratio: 4 / 5;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 68% 28%, #f0d9a8 0 11%, transparent 12%),
+    linear-gradient(165deg, #d2ad86 0%, #a97c64 48%, #647572 100%);
+  filter: blur(22px);
+}
+
+.timer {
+  margin: 24px 0 14px;
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font: inherit;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  padding: 9px 22px;
+  cursor: pointer;
+}
+
+.btn.soft {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+@media (min-width: 900px) {
+  .screen { max-width: 520px; }
+  .mat { padding: 40px; }
+  .timer { font-size: 1.5rem; }
 }
