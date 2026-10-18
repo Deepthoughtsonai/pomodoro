@@ -10,6 +10,7 @@ const toggleBtn = document.getElementById('toggle-btn');
 const resetBtn = document.getElementById('reset-btn');
 const artWrap = document.getElementById('art-wrap');
 const artworkEl = document.getElementById('artwork');
+const detailsSlot = document.getElementById('details-slot');
 
 let remainingMs = DURATION_MS;
 let endTime = 0;
@@ -52,7 +53,7 @@ function finish() {
   resetBtn.hidden = true;
 
   if (currentArt) {
-    screen.append(buildDetails(currentArt));
+    detailsSlot.append(buildDetails(currentArt));
   }
 }
 
@@ -124,6 +125,7 @@ function preload(url) {
 async function loadArtwork() {
   const thisLoad = ++loadCount;
   artWrap.dataset.state = 'loading';
+  artWrap.style.removeProperty('--ratio');
   currentArt = null;
   try {
     if (objectIds.length === 0) {
