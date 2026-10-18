@@ -50,6 +50,10 @@ body {
   filter: blur(9px);
 }
 
+.screen.finished .art {
+  filter: none;
+}
+
 .timer {
   margin: 24px 0 14px;
   font-size: 1.4rem;
@@ -79,6 +83,22 @@ body {
 .btn.soft {
   border-color: var(--line);
   color: var(--muted);
+}
+
+.details {
+  margin-top: 24px;
+}
+
+.details .name {
+  font-size: 1.15rem;
+  font-style: italic;
+  margin: 0;
+}
+
+.details .meta {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 @media (min-width: 900px) {

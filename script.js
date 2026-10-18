@@ -8,6 +8,7 @@ const resetBtn = document.getElementById('reset-btn');
 let remainingMs = DURATION_MS;
 let endTime = 0;
 let intervalId = null;
+let finished = false;
 
 function render() {
   const totalSeconds = Math.ceil(remainingMs / 1000);
@@ -28,7 +29,42 @@ function tick() {
   render();
   if (remainingMs === 0) {
     stop();
+    finish();
   }
+}
+
+// The painting details are only created here, so they cannot be seen earlier.
+function finish() {
+  finished = true;
+  screen.classList.add('finished');
+  toggleBtn.textContent = 'Restart session';
+  resetBtn.hidden = true;
+
+  const details = document.createElement('div');
+  details.className = 'details';
+  details.id = 'details';
+
+  const name = document.createElement('p');
+  name.className = 'name';
+  name.textContent = 'The Quiet Orchard';
+
+  const meta = document.createElement('p');
+  meta.className = 'meta';
+  meta.textContent = 'Marguerite Aldous, 1887';
+
+  details.append(name, meta);
+  screen.append(details);
+}
+
+function reset() {
+  stop();
+  finished = false;
+  remainingMs = DURATION_MS;
+  render();
+  screen.classList.remove('started', 'finished');
+  toggleBtn.textContent = 'Start';
+  resetBtn.hidden = false;
+  document.getElementById('details')?.remove();
 }
 
 function run() {
@@ -39,21 +75,17 @@ function run() {
 }
 
 toggleBtn.addEventListener('click', () => {
-  if (intervalId) {
+  if (finished) {
+    reset();
+  } else if (intervalId) {
     tick();
     if (intervalId) {
       stop();
       toggleBtn.textContent = 'Resume';
     }
-  } else if (remainingMs > 0) {
+  } else {
     run();
   }
 });
 
-resetBtn.addEventListener('click', () => {
-  stop();
-  remainingMs = DURATION_MS;
-  render();
-  screen.classList.remove('started');
-  toggleBtn.textContent = 'Start';
-});
+resetBtn.addEventListener('click', reset);
